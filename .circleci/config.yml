@@ -6,6 +6,18 @@ jobs:
       - image: cimg/node:16.13.2
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json"}}
+            - v1-dependencies-
+      - run: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          keys: v1-dependencies-{{ checksum "package.json"}}
+      - run: yarn test
+      - run: yarn build
+      - run: yarn netlify:deploy
       - run:
           name: Update NPM
           command: "sudo npm install -g npm"
